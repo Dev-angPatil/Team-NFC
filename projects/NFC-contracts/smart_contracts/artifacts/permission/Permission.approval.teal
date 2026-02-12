@@ -1,0 +1,144 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 32 1 0
+    bytecblock 0x7065726d5f
+    // smart_contracts/permission/contract.py:5
+    // class Permission(ARC4Contract):
+    txn NumAppArgs
+    bz main___algopy_default_create@12
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0x419f75c9 0x23831597 0x77472061 // method "grant(address,uint64)void", method "revoke(address)void", method "has_permission(address)bool"
+    txna ApplicationArgs 0
+    match grant revoke has_permission
+    err
+
+main___algopy_default_create@12:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// smart_contracts.permission.contract.Permission.grant[routing]() -> void:
+grant:
+    // smart_contracts/permission/contract.py:9
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    len
+    pushint 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    // smart_contracts/permission/contract.py:11
+    // assert Txn.sender == op.Global.creator_address
+    txn Sender
+    global CreatorAddress
+    ==
+    assert
+    // smart_contracts/permission/contract.py:12
+    // self.permission_expiry[account.bytes] = expiry_timestamp.native
+    btoi
+    bytec_0 // 0x7065726d5f
+    uncover 2
+    concat
+    swap
+    itob
+    box_put
+    // smart_contracts/permission/contract.py:9
+    // @abimethod()
+    intc_1 // 1
+    return
+
+
+// smart_contracts.permission.contract.Permission.revoke[routing]() -> void:
+revoke:
+    // smart_contracts/permission/contract.py:14
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/permission/contract.py:16
+    // assert Txn.sender == op.Global.creator_address
+    txn Sender
+    global CreatorAddress
+    ==
+    assert
+    // smart_contracts/permission/contract.py:17
+    // del self.permission_expiry[account.bytes]
+    bytec_0 // 0x7065726d5f
+    swap
+    concat
+    box_del
+    pop
+    // smart_contracts/permission/contract.py:14
+    // @abimethod()
+    intc_1 // 1
+    return
+
+
+// smart_contracts.permission.contract.Permission.has_permission[routing]() -> void:
+has_permission:
+    // smart_contracts/permission/contract.py:19
+    // @abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/permission/contract.py:21
+    // expiry_timestamp = self.permission_expiry.get(
+    bytec_0 // 0x7065726d5f
+    // smart_contracts/permission/contract.py:21-23
+    // expiry_timestamp = self.permission_expiry.get(
+    //     account.bytes, default=UInt64(0)
+    // )
+    swap
+    concat
+    box_get
+    swap
+    btoi
+    // smart_contracts/permission/contract.py:22
+    // account.bytes, default=UInt64(0)
+    intc_2 // 0
+    // smart_contracts/permission/contract.py:21-23
+    // expiry_timestamp = self.permission_expiry.get(
+    //     account.bytes, default=UInt64(0)
+    // )
+    swap
+    uncover 2
+    select
+    // smart_contracts/permission/contract.py:24
+    // return arc4.Bool(expiry_timestamp >= op.Global.latest_timestamp)
+    global LatestTimestamp
+    >=
+    pushbytes 0x00
+    intc_2 // 0
+    uncover 2
+    setbit
+    // smart_contracts/permission/contract.py:19
+    // @abimethod(readonly=True)
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return

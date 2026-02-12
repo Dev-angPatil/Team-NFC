@@ -1,6 +1,13 @@
-import { SupportedWallet, WalletId, WalletManager, WalletProvider } from '@txnlab/use-wallet-react'
+import { SupportedWallet, WalletId, WalletManager, WalletProvider, useWallet } from '@txnlab/use-wallet-react'
 import { SnackbarProvider } from 'notistack'
-import Home from './Home'
+import { useState } from 'react'
+import Account from './components/Account'
+import ConnectWallet from './components/ConnectWallet'
+import MintTicket from './components/MintTicket'
+import PermissionManager from './components/PermissionManager'
+import RegisterIdentity from './components/RegisterIdentity'
+import VerifyEntry from './components/VerifyEntry'
+import { getDefaultEventAssetId } from './utils/campusPassConfig'
 import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
 
 let supportedWallets: SupportedWallet[]
@@ -17,13 +24,34 @@ if (import.meta.env.VITE_ALGOD_NETWORK === 'localnet') {
     },
   ]
 } else {
-  supportedWallets = [
-    { id: WalletId.DEFLY },
-    { id: WalletId.PERA },
-    { id: WalletId.EXODUS },
-    // If you are interested in WalletConnect v2 provider
-    // refer to https://github.com/TxnLab/use-wallet for detailed integration instructions
-  ]
+  supportedWallets = [{ id: WalletId.DEFLY }, { id: WalletId.PERA }, { id: WalletId.EXODUS }]
+}
+
+function CampusPassPage() {
+  const [walletModalOpen, setWalletModalOpen] = useState(false)
+  const [lastMintedAssetId, setLastMintedAssetId] = useState<number | null>(getDefaultEventAssetId())
+  const { activeAddress } = useWallet()
+
+  return (
+    <div className="hero">
+      <div className="campuspass-shell">
+        <h1>CampusPass Web3</h1>
+        <p>Algorand Testnet dApp for identity registration, NFT ticketing, and entry verification.</p>
+        <button className="btn" onClick={() => setWalletModalOpen(true)}>
+          {activeAddress ? 'Manage Wallet' : 'Connect Wallet'}
+        </button>
+
+        {activeAddress && <Account />}
+
+        <RegisterIdentity />
+        <MintTicket onMint={(assetId) => setLastMintedAssetId(assetId)} />
+        <VerifyEntry initialAssetId={lastMintedAssetId} />
+        <PermissionManager />
+
+        <ConnectWallet openModal={walletModalOpen} closeModal={() => setWalletModalOpen(false)} />
+      </div>
+    </div>
+  )
 }
 
 export default function App() {
@@ -47,9 +75,9 @@ export default function App() {
   })
 
   return (
-    <SnackbarProvider maxSnack={3}>
+    <SnackbarProvider maxSnack={4}>
       <WalletProvider manager={walletManager}>
-        <Home />
+        <CampusPassPage />
       </WalletProvider>
     </SnackbarProvider>
   )

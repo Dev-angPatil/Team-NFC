@@ -1,0 +1,102 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 1 0
+    bytecblock "student_hash" 0x
+    // smart_contracts/identity/contract.py:5
+    // class Identity(ARC4Contract):
+    txn NumAppArgs
+    bz main_bare_routing@11
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0xbd6099e5 0xd9a24155 // method "register(string)void", method "get_registered_hash(address)string"
+    txna ApplicationArgs 0
+    match register get_registered_hash
+    err
+
+main_bare_routing@11:
+    // smart_contracts/identity/contract.py:5
+    // class Identity(ARC4Contract):
+    txn OnCompletion
+    switch main___algopy_default_create@12 main_opt_in@13
+    err
+
+main_opt_in@13:
+    // smart_contracts/identity/contract.py:9
+    // @baremethod(allow_actions=["OptIn"])
+    txn ApplicationID
+    assert
+    // smart_contracts/identity/contract.py:11
+    // self.student_hash[Txn.sender] = Bytes()
+    txn Sender
+    bytec_0 // "student_hash"
+    bytec_1 // 0x
+    app_local_put
+    // smart_contracts/identity/contract.py:9
+    // @baremethod(allow_actions=["OptIn"])
+    intc_0 // 1
+    return
+
+main___algopy_default_create@12:
+    txn ApplicationID
+    !
+    return
+
+
+// smart_contracts.identity.contract.Identity.register[routing]() -> void:
+register:
+    // smart_contracts/identity/contract.py:13
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    pushint 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    // smart_contracts/identity/contract.py:15
+    // self.student_hash[Txn.sender] = student_hash.bytes
+    txn Sender
+    bytec_0 // "student_hash"
+    uncover 2
+    app_local_put
+    // smart_contracts/identity/contract.py:13
+    // @abimethod()
+    intc_0 // 1
+    return
+
+
+// smart_contracts.identity.contract.Identity.get_registered_hash[routing]() -> void:
+get_registered_hash:
+    // smart_contracts/identity/contract.py:17
+    // @abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/identity/contract.py:19
+    // student_hash = self.student_hash.get(account.native, Bytes())
+    intc_1 // 0
+    bytec_0 // "student_hash"
+    app_local_get_ex
+    bytec_1 // 0x
+    cover 2
+    select
+    // smart_contracts/identity/contract.py:17
+    // @abimethod(readonly=True)
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return

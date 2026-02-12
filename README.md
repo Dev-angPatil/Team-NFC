@@ -1,45 +1,124 @@
-# NFC
+# CampusPass Web3 on Algorand Testnet
 
-This starter full stack project has been generated using AlgoKit. See below for default getting started instructions.
+CampusPass is a full-stack Algorand dApp built from the AlgoKit QuickStart workspace.
 
-## Setup
+It includes:
+- Wallet connect (Pera/Defly/Exodus on Testnet)
+- Student identity registration (on-chain local state)
+- Event ticket minting as real Algorand Standard Asset NFTs (ASA supply 1)
+- Entry verification via Algorand Indexer (NFT ownership check)
+- Optional admin permission management (grant/revoke/check with expiry)
 
-### Initial setup
-1. Clone this repository to your local machine.
-2. Ensure [Docker](https://www.docker.com/) is installed and operational. Then, install `AlgoKit` following this [guide](https://github.com/algorandfoundation/algokit-cli#install).
-3. Run `algokit project bootstrap all` in the project directory. This command sets up your environment by installing necessary dependencies, setting up a Python virtual environment, and preparing your `.env` file.
-4. In the case of a smart contract project, execute `algokit generate env-file -a target_network localnet` from the `NFC-contracts` directory to create a `.env.localnet` file with default configuration for `localnet`.
-5. To build your project, execute `algokit project run build`. This compiles your project and prepares it for running.
-6. For project-specific instructions, refer to the READMEs of the child projects:
-   - Smart Contracts: [NFC-contracts](projects/NFC-contracts/README.md)
-   - Frontend Application: [NFC-frontend](projects/NFC-frontend/README.md)
+## Project Structure
 
-> This project is structured as a monorepo, refer to the [documentation](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/project/run.md) to learn more about custom command orchestration via `algokit project run`.
+- `projects/NFC-contracts`: Algorand smart contracts and deployment scripts
+- `projects/NFC-frontend`: React frontend (Vite + use-wallet + algosdk)
 
-### Subsequently
+## Implemented Contracts
 
-1. If you update to the latest source code and there are new dependencies, you will need to run `algokit project bootstrap all` again.
-2. Follow step 3 above.
+- `projects/NFC-contracts/smart_contracts/identity/contract.py`
+  - `opt_in` (bare OptIn)
+  - `register(string)` stores hashed student ID in local state
+  - `get_registered_hash(address)` readonly getter
+- `projects/NFC-contracts/smart_contracts/permission/contract.py`
+  - `grant(address,uint64)` admin-only
+  - `revoke(address)` admin-only
+  - `has_permission(address)` readonly check against expiry timestamp
 
-## Tools
+Deploy configs:
+- `projects/NFC-contracts/smart_contracts/identity/deploy_config.py`
+- `projects/NFC-contracts/smart_contracts/permission/deploy_config.py`
 
-This project makes use of Python and React to build Algorand smart contracts and to provide a base project configuration to develop frontends for your Algorand dApps and interactions with smart contracts. The following tools are in use:
+Deployment metadata helper:
+- `projects/NFC-contracts/smart_contracts/_deployment.py`
+  - Writes app IDs to `projects/NFC-contracts/smart_contracts/deployments/<network>.json`
+  - Updates frontend runtime env in `projects/NFC-frontend/.env.local`
 
-- Algorand, AlgoKit, and AlgoKit Utils
-- Python dependencies including Poetry, Black, Ruff or Flake8, mypy, pytest, and pip-audit
-- React and related dependencies including AlgoKit Utils, Tailwind CSS, daisyUI, use-wallet, npm, jest, playwright, Prettier, ESLint, and Github Actions workflows for build validation
+## Implemented Frontend Components
 
-### VS Code
+- `projects/NFC-frontend/src/components/RegisterIdentity.tsx`
+- `projects/NFC-frontend/src/components/MintTicket.tsx`
+- `projects/NFC-frontend/src/components/VerifyEntry.tsx`
+- `projects/NFC-frontend/src/components/PermissionManager.tsx`
 
-It has also been configured to have a productive dev experience out of the box in [VS Code](https://code.visualstudio.com/), see the [backend .vscode](./backend/.vscode) and [frontend .vscode](./frontend/.vscode) folders for more details.
+Integrated in:
+- `projects/NFC-frontend/src/App.tsx`
 
-## Integrating with smart contracts and application clients
+## Environment Setup (Testnet)
 
-Refer to the [NFC-contracts](projects/NFC-contracts/README.md) folder for overview of working with smart contracts, [projects/NFC-frontend](projects/NFC-frontend/README.md) for overview of the React project and the [projects/NFC-frontend/contracts](projects/NFC-frontend/src/contracts/README.md) folder for README on adding new smart contracts from backend as application clients on your frontend. The templates provided in these folders will help you get started.
-When you compile and generate smart contract artifacts, your frontend component will automatically generate typescript application clients from smart contract artifacts and move them to `frontend/src/contracts` folder, see [`generate:app-clients` in package.json](projects/NFC-frontend/package.json). Afterwards, you are free to import and use them in your frontend application.
+### 1) Contracts env
 
-The frontend starter also provides an example of interactions with your HelloWorldClient in [`AppCalls.tsx`](projects/NFC-frontend/src/components/AppCalls.tsx) component by default.
+```bash
+cd projects/NFC-contracts
+cp .env.template .env
+```
 
-## Next Steps
+Edit `projects/NFC-contracts/.env` and set:
+- `DEPLOYER_MNEMONIC="your 25-word mnemonic"`
+- Testnet algod/indexer endpoints are already set in template
 
-You can take this project and customize it to build your own decentralized applications on Algorand. Make sure to understand how to use AlgoKit and how to write smart contracts for Algorand before you start.
+### 2) Frontend env
+
+```bash
+cd ../NFC-frontend
+cp .env.template .env
+```
+
+After contract deployment, set:
+- `VITE_IDENTITY_APP_ID`
+- `VITE_PERMISSION_APP_ID` (optional if permission contract deployed)
+- `VITE_DEFAULT_EVENT_ASSET_ID` (optional)
+
+## Wallet Setup (Pera + Testnet Funding)
+
+1. Install Pera Wallet.
+2. Create/import a Testnet account.
+3. Fund account with Testnet ALGOs from AlgoKit dispenser/faucet.
+4. Use this funded account in the frontend wallet modal.
+5. Use a deployer mnemonic in `projects/NFC-contracts/.env` for contract deployment.
+
+## Build and Run
+
+### Bootstrap and build workspace
+
+```bash
+cd /path/to/NFC
+algokit project bootstrap all
+algokit project run build
+```
+
+### Deploy contracts to Testnet
+
+```bash
+algokit project deploy testnet
+```
+
+On successful deployment, app IDs are written to:
+- `projects/NFC-contracts/smart_contracts/deployments/testnet.json`
+- `projects/NFC-frontend/.env.local`
+
+### Run frontend
+
+```bash
+cd projects/NFC-frontend
+pnpm install
+pnpm dev
+```
+
+Open:
+- `http://localhost:5173/`
+
+## Deployment Records
+
+Fill these after successful Testnet deploy/mint:
+
+- Identity App ID: `TBD`
+- Permission App ID: `TBD`
+- Event Ticket Asset ID(s): `TBD`
+
+## Notes on Real Transactions
+
+- Identity registration uses real app opt-in + app call transactions.
+- Ticket minting uses real `algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject` transactions.
+- Permission manager uses real app ABI method calls with box references.
+- Entry verification checks real indexer holdings for the selected NFT asset ID.

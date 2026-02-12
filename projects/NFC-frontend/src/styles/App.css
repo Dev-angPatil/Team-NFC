@@ -1,62 +1,80 @@
-/* App.css */
-
 .hero {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background-color: #38b2ac;
+  background: linear-gradient(145deg, #0f766e 0%, #115e59 55%, #134e4a 100%);
+  padding: 2rem 1rem;
 }
 
-.hero-content {
-  text-align: center;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  max-width: 24rem;
-  background-color: #ffffff;
+.campuspass-shell {
   margin: 0 auto;
-}
-
-.text-4xl {
-  font-size: 2.25rem;
-  line-height: 2.5rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.py-6 {
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-}
-
-.grid {
+  width: min(920px, 100%);
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
   display: grid;
+  gap: 1rem;
+}
+
+.campuspass-shell h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.campuspass-shell p {
+  margin: 0;
+}
+
+.campuspass-card {
+  border: 1px solid #d1d5db;
+  border-radius: 0.65rem;
+  padding: 1rem;
+  display: grid;
+  gap: 0.7rem;
+  background: #f8fafc;
+}
+
+.campuspass-card h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #9ca3af;
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.95rem;
 }
 
 .btn {
-  margin: 0.5rem;
+  border: 1px solid #0f766e;
+  border-radius: 0.5rem;
+  background: #0f766e;
+  color: #ffffff;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
 }
 
-.btn-primary {
-  background-color: #1a202c;
-  color: #fff;
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
-.divider {
-  border-top: 1px solid #e2e8f0;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.mono {
+  font-family: monospace;
+  overflow-wrap: anywhere;
 }
 
 .modal {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
   display: none;
   z-index: 9999;
   overflow: auto;
@@ -67,20 +85,20 @@
 }
 
 .modal-box {
-  margin: 2.5em auto;
-  background: #fff;
-  border-radius: 0.5em;
-  width: 40em;
-  max-width: 90vw;
-  padding: 1em;
+  margin: 2.5rem auto;
+  width: min(42rem, 92vw);
+  background: #ffffff;
+  border-radius: 0.6rem;
+  padding: 1rem;
 }
 
-.font-bold {
-  font-weight: bold;
+.divider {
+  border-top: 1px solid #e5e7eb;
+  margin: 0.5rem 0;
 }
 
-.text-2xl {
-  font-size: 1.5rem;
+.grid {
+  display: grid;
 }
 
 .m-2 {
@@ -91,36 +109,14 @@
   padding-top: 1.25rem;
 }
 
-.grid {
-  display: grid;
-}
-
-.btn {
-  margin: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #00aba2;
-  color: #fff;
-}
-
-.btn-warning {
-  background-color: #d69e2e;
-}
-
-.border-1 {
-  border-width: 1px;
-}
-
-.border-teal-800 {
-  border-color: #2c7a7b;
-}
-
 .modal-action {
-  display: grid;
   margin-top: 1rem;
+  display: grid;
+  gap: 0.5rem;
 }
 
-.divider {
-  border-top: 1px solid #e2e8f0;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+@media (max-width: 768px) {
+  .campuspass-shell {
+    padding: 1rem;
+  }
 }

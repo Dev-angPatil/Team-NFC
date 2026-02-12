@@ -11,7 +11,6 @@ python = "^3.12"
 algokit-utils = "^4.0.0"
 python-dotenv = "^1.0.0"
 algorand-python = "^3"
-algorand-python-testing = "^1"
 
 [tool.poetry.group.dev.dependencies]
 algokit-client-generator = "^2.1.0"
@@ -20,4 +19,3 @@ puyapy = "*"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
