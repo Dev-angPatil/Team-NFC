@@ -1,77 +1,41 @@
-Excellent. This is the right instinct.
-
-Right now your README sounds like a deployment log.
-You want it to feel like:
-• A real product description
-• A technical architecture explanation
-• A code walkthrough
-• A hackathon-ready documentation file
-Below is a **rewritten README** that explains both the project and the code structure clearly, professionally, and intentionally.
-You can replace your current README with this.
----
-
-# CampusPass — Blockchain-Based Digital Student ID on Algorand
-
+# CampusPass — Smart Decentralized College ID on Algorand
 CampusPass is a full-stack Web3 application built on **Algorand Testnet** using the AlgoKit QuickStart workspace.
 
 It demonstrates how blockchain can power a digital campus identity system by combining:
-
 * On-chain student identity registration
 * NFT-based event tickets (Algorand Standard Assets)
 * Real-time entry verification
 * Optional permission-based access control
-
 This project is not a generic NFT demo. It is designed as a proof-of-concept for a decentralized campus identity and event management system.
 
----
-
 # Concept Overview
-
 CampusPass transforms a wallet address into a digital student identity.
-
 The system has three logical layers:
-
 ## 1. Identity Layer
-
 Students connect their wallet and register their student ID.
-
 The hashed student ID is stored in local state inside a smart contract on Algorand.
-
 This establishes:
 
 * Wallet ↔ Student identity binding
 * Tamper-resistant on-chain registration
 * Verifiable student authenticity
 
----
-
 ## 2. Ticket Layer (NFT as Event Credential)
 
 Event tickets are minted as real Algorand Standard Assets (ASA).
-
 Each ticket:
-
 * Has supply = 1
 * Is owned by the student wallet
 * Contains event metadata
-
 The NFT becomes a blockchain-based access credential.
 
----
-
 ## 3. Verification Layer
-
 Entry verification checks:
-
 * Does the wallet own the required ticket NFT?
 * Is permission valid (if permission contract is enabled)?
-
 Verification is performed using the Algorand Indexer.
 
----
-
 # Tech Stack
-
 * Algorand Testnet
 * AlgoKit Workspace
 * PyTeal (Smart Contracts)
@@ -81,10 +45,7 @@ Verification is performed using the Algorand Indexer.
 * use-wallet (Wallet connection)
 * Pera Wallet (Testnet)
 
----
-
 # Project Structure
-
 ```
 projects/
 │
@@ -110,30 +71,19 @@ projects/
         │
         └── App.tsx
 ```
-
----
-
 # Smart Contracts Explained
-
 ## Identity Contract
-
 Location:
-
 ```
 projects/NFC-contracts/smart_contracts/identity/contract.py
 ```
-
 Purpose:
 Stores student identity in local state.
-
 Key methods:
-
 * opt_in → Allows wallet to opt into contract.
 * register(string) → Stores hashed student ID.
 * get_registered_hash(address) → Read-only method to fetch stored hash.
-
 How it works:
-
 * Student opts into the application.
 * Student calls register.
 * Contract writes:
@@ -151,7 +101,6 @@ projects/NFC-frontend/
 ```
 The frontend is a React + Vite application that interacts with Algorand via algosdk.
 ---
-
 ## RegisterIdentity.tsx
 * Connects wallet
 * Opts into identity contract
